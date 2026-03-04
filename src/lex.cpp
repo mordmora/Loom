@@ -2,7 +2,7 @@
 #include <iostream>
 
 
-namespace umbra {
+namespace loom {
 
     struct SymbolTable {
         bool data[256] = {false};

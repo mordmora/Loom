@@ -14,7 +14,7 @@
     #include <unistd.h>
 #endif
 #include <iostream>
-namespace umbra {
+namespace loom {
 
     struct SourceFileView {
         const uint8_t* buff;

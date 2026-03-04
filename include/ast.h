@@ -2,7 +2,7 @@
 
 #include "lex.h"
 
-namespace umbra {
+namespace loom {
 
     using NodeIDX = uint32_t;
     constexpr NodeIDX NullNode = 0xFFFFFFFF;

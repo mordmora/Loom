@@ -6,7 +6,7 @@
 #include "str.h"
 #include <ostream>
 
-namespace umbra {
+namespace loom {
     
     enum TokenType {
         None = -2,

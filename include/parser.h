@@ -2,15 +2,15 @@
 
 #include "lex.h"
 #include "arena.h"
-namespace umbra {
+namespace loom {
 
     class Parser {
         public:
-        explicit Parser(Lexer& lexer, memory::STLAllocator allocator) : lex(lexer), allocator(allocator) {}
+        explicit Parser(Lexer& lexer, memory::STLAllocator<uint8_t> allocator) : lex(lexer), allocator(allocator) {}
 
         private:
         Lexer lex;
-        memory::STLAllocator allocator;
+        memory::STLAllocator<uint8_t> allocator;
         Token current;
         Token prev;
 
