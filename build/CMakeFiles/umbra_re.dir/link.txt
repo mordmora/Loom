@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/umbra_re.dir/src/arena.cpp.o CMakeFiles/umbra_re.dir/src/lex.cpp.o CMakeFiles/umbra_re.dir/src/main.cpp.o -o umbra_re 

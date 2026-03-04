@@ -1,0 +1,3 @@
+/home/mordmora/umbra_re/build/CMakeFiles/umbra_re.dir
+/home/mordmora/umbra_re/build/CMakeFiles/edit_cache.dir
+/home/mordmora/umbra_re/build/CMakeFiles/rebuild_cache.dir

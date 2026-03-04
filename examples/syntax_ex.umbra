@@ -1,0 +1,36 @@
+
+func sum(start: int, end: int, #[shared_object] vec: []int) -> Thread<int> {
+    res: i32
+    for int i = start; i < end; i++ {
+        res += vec[i]
+    }
+    return res
+}
+
+struct data {
+    int a;
+    int b;
+}
+
+func main() -> int {
+
+    num_threads: int = 2
+    vec_size: int = 100
+    vec [100]int = fill() //llena con cualquier cosa
+    delta: int = num_threads / vec_size
+
+    threads: [num_threads]Thread<int> 
+
+    arena: Arena = create_arena(1024)
+    for int i = 0; i < num_threads; i++ {
+        #[spawn (allocator=arena)]
+        threads[i] = sum(i*delta, i*delta + i, vec)
+    }
+
+    res: int = 0
+
+    for int i = 0; i < num_threads; i++ {
+        res += threads[i].join()
+    }
+    return 0;
+}
