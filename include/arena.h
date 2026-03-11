@@ -20,7 +20,7 @@ namespace memory {
         uint32_t cap;
         ArenaBlock* next;
     };
-    
+
     class Arena {
         friend class PoolAllocator;
     public:
@@ -65,7 +65,7 @@ namespace memory {
         using value_type = T;
 
         STLAllocator() = delete;
-        
+
         explicit STLAllocator(PoolAllocator& arena) noexcept : m_arena(&arena) {}
 
         template<typename U>
