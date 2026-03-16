@@ -30,18 +30,22 @@ namespace loom {
         SourceManager& operator=(const SourceManager&) = delete;
 
         ~SourceManager() {
-            for (std::size_t i = 0; i < buffs.size(); i++) {
-                #ifdef _WIN32
-                if (buffs[i])              UnmapViewOfFile(buffs[i]);
-                if (hMaps[i])              CloseHandle(hMaps[i]);
+            #ifdef _WIN32
+            std::size_t n = hFiles.size();
+            for (std::size_t i = 0; i < n; i++) {
+                if (i < buffs.size() && buffs[i]) UnmapViewOfFile(buffs[i]);
+                if (i < hMaps.size() && hMaps[i])  CloseHandle(hMaps[i]);
                 if (hFiles[i] != INVALID_HANDLE_VALUE) CloseHandle(hFiles[i]);
-                #else
-                if (buffs[i] && buffs[i] != reinterpret_cast<const uint8_t*>(MAP_FAILED))
+            }
+            #else
+            std::size_t n = fds.size();
+            for (std::size_t i = 0; i < n; i++) {
+                if (i < buffs.size() && buffs[i] && buffs[i] != reinterpret_cast<const uint8_t*>(MAP_FAILED))
                     munmap((void*)buffs[i], sizes[i]);
                 if (fds[i] != -1)
                     close(fds[i]);
-                #endif
             }
+            #endif
         }
 
         uint16_t loadFile(const std::string& path) {

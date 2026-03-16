@@ -24,10 +24,12 @@ namespace memory {
     class Arena {
         friend class PoolAllocator;
     public:
+        ~Arena();
         void blockRelease(ArenaBlock *b);
         ArenaBlock *newArenaBlock(uint64_t size, uint64_t align);
         void clear();
     private:
+        void freeBlocks();
         uint32_t blockCap;
         uint32_t inUse;
         ArenaBlock* head;

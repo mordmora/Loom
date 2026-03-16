@@ -25,6 +25,7 @@ namespace memory
         b->mem = reinterpret_cast<void *>((baseAddr + (align - 1)) & ~(align - 1));
         b->startRef = rawMem;
         b->used = 0;
+        b->next = nullptr;
         return b;
     }
 
@@ -44,10 +45,24 @@ namespace memory
 
     PoolAllocator::~PoolAllocator()
     {
-        if (arena != nullptr)
+        delete arena;
+    }
+
+    Arena::~Arena()
+    {
+        freeBlocks();
+    }
+
+    void Arena::freeBlocks()
+    {
+        blockRelease(head);
+        ArenaBlock *b = tail;
+        ArenaBlock *n = nullptr;
+        while (b)
         {
-            arena->clear();
-            delete arena;
+            n = b->next;
+            blockRelease(b);
+            b = n;
         }
     }
 
@@ -108,15 +123,7 @@ namespace memory
 
     void Arena::clear()
     {
-        blockRelease(head);
-        ArenaBlock *b = tail;
-        ArenaBlock *n = nullptr;
-        while (b)
-        {
-            n = b->next;
-            blockRelease(b);
-            b = n;
-        }
+        freeBlocks();
         head = newArenaBlock(blockCap, ALIGNMENT);
         tail = nullptr;
         inUse = 0;

@@ -18,13 +18,11 @@ namespace loom {
 
         memory::PoolAllocator* arena;
 
-        // --- FUNCIONES AUXILIARES DE ESTADO ---
         void advance() {
             previous = current;
             current = lexer.getToken();
         }
 
-        // Consume un token si es del tipo esperado, o falla silenciosamente (para control de flujo)
         bool match(TokenType type) {
             if (current.type == type) {
                 advance();
@@ -33,7 +31,6 @@ namespace loom {
             return false;
         }
 
-        // Obliga a que el token actual sea de un tipo, si no, reporta error
         void consume(TokenType type, const char* err_msg) {
             if (current.type == type) {
                 advance();

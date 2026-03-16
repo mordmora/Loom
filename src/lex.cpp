@@ -1,11 +1,12 @@
 #include "lex.h"
 #include <iostream>
 
+#define MAX 256
 
 namespace loom {
 
     struct SymbolTable {
-        bool data[256] = {false};
+        bool data[MAX] = {false};
 
         constexpr SymbolTable() {
             data['+'] = true; data['-'] = true; data['*'] = true; data['/'] = true;
@@ -18,9 +19,9 @@ namespace loom {
     };
 
     struct TokenMap {
-        TokenType d[256];
+        TokenType d[MAX];
         constexpr TokenMap() : d{} {
-            for (int i = 0; i < 256; i++) d[i] = TokenType::None;
+            for (int i = 0; i < MAX; i++) d[i] = TokenType::None;
             d['+'] = TokenType::Plus;
             d['-'] = TokenType::Minus;
             d['*'] = TokenType::Asterisk;
