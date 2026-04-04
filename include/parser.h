@@ -1,71 +1,93 @@
 #pragma once
-#include "lex.h"
 #include "arena.h"
-#include "ast.h" // Asumiendo que aquí definimos ASTNode y NodeIndex
-#include <vector>
+#include "ast.h"
+#include "lex.h"
+#include <cstdint>
 #include <iostream>
+#include <vector>
 
-namespace loom {
+namespace loom
+{
 
-    class Parser {
-    private:
-        Lexer lexer;
-        Token current;
-        Token previous;
+  class Parser
+  {
+  private:
+    Lexer *lexer;
 
-        using ASTVector = std::vector<ASTNode, memory::STLAllocator<ASTNode>>;
-        ASTVector nodes;
+    using ASTVector = std::vector<ASTNode, memory::STLAllocator<ASTNode>>;
+    using ExtraV = std::vector<uint32_t, memory::STLAllocator<uint32_t>>;
+    ASTVector nodes;
+    ExtraV extra;
+    ExtraV errs;
 
-        memory::PoolAllocator* arena;
+    Token curr_tok;
 
-        void advance() {
-            previous = current;
-            current = lexer.getToken();
-        }
+    memory::PoolAllocator *arena;
 
-        bool match(TokenType type) {
-            if (current.type == type) {
-                advance();
-                return true;
-            }
-            return false;
-        }
+    bool had_error = false;
 
-        void consume(TokenType type, const char* err_msg) {
-            if (current.type == type) {
-                advance();
-                return;
-            }
-            errorAtCurrent(err_msg);
-        }
+    Token peek()
+    {
+      return curr_tok;
+    }
 
-        void errorAtCurrent(const char* message) {
-            std::cerr << "[Error de Sintaxis] " << message << "\n";
-        }
+    Token advance()
+    {
+      Token prev = curr_tok;
+      curr_tok = lexer->getToken();
+      return prev;
+    }
 
-        NodeIDX emitNode(const ASTNode& node) {
-            NodeIDX idx = static_cast<NodeIDX>(nodes.size());
-            nodes.push_back(node);
-            return idx;
-        }
+    Token expect(TokenType t)
+    {
+      if (peek().type != t)
+      {
+        errs.push_back(curr_tok.start);
+        had_error = true;
+        return curr_tok;
+      }
+      return advance();
+    }
 
-    public:
-        Parser(Lexer lex, memory::PoolAllocator& alloc) 
-            : lexer(lex), 
-              arena(&alloc),
-              nodes(memory::STLAllocator<ASTNode>(alloc)) 
-        {
-            nodes.reserve(1024); 
-            
-            advance(); 
-        }
+    bool match(TokenType t)
+    {
+      if (peek().type == t)
+      {
+        advance();
+        return true;
+      }
+      return false;
+    }
 
-        void parse();
+    bool check(TokenType t)
+    {
+      return peek().type == t;
+    }
 
-    private:
-        NodeIDX parseDeclaration();
-        NodeIDX parseFunctionDecl();
-        NodeIDX parseStatement();
-    };
+    NodeType tokenToType(TokenType t);
 
-}
+  public:
+    Parser(Lexer &lex, memory::PoolAllocator &alloc)
+        : lexer(&lex), arena(&alloc), nodes(memory::STLAllocator<ASTNode>(alloc)),
+          extra(memory::STLAllocator<uint32_t>(alloc))
+    {
+      nodes.reserve(1024);
+      errs.reserve(1024);
+      extra.reserve(1024);
+      curr_tok = lexer->getToken();
+    }
+
+    NodeIDX parse();
+
+    NodeIDX parseVarDecl();
+
+    NodeIDX parseExpr();
+
+    NodeIDX parseType();
+
+    NodeIDX parseAttr();
+
+    NodeIDX binaryExpr();
+  };
+
+} // namespace loom
